@@ -6,6 +6,7 @@ import PrimaryButton from '../components/ui/PrimaryButton';
 import Card from "../components/ui/Card";
 import InstructionText from "../components/ui/InstructionText";
 import { Ionicons } from '@expo/vector-icons';
+import GuessLogItem from "../components/game/GuessLogItem";
 
 function generateRandomBetween(min, max, exclude) {
     const rndNum = Math.floor(Math.random() * (max - min)) + min;
@@ -28,7 +29,7 @@ function GameScreen({ userNumber, onGameOver }) {
 
     useEffect(() => {
         if (currentGuess === userNumber) {
-            onGameOver();
+            onGameOver(guessRounds.length);
         }
     }, [currentGuess, userNumber, onGameOver]);
 
@@ -54,6 +55,8 @@ function GameScreen({ userNumber, onGameOver }) {
         setGuessRounds((prev) => [newRandomNumber, ...prev]);
     }
 
+    const guessRoundsListLength = guessRounds.length;
+
     return <View style={StyleSheet.screen}>
         <Title>Opponent's Guess</Title>
         <NumberContainer>{currentGuess}</NumberContainer>
@@ -70,12 +73,15 @@ function GameScreen({ userNumber, onGameOver }) {
                     </PrimaryButton></View>
             </View>
         </Card>
-        <View>
-            <View>
-                <FlatList data={guessRounds} renderItem={(itemData) =>  <Text>{itemData.item}</Text>}
-                keyExtractor={(item) => item} 
-                />
-            </View>
+        <View style={styles.listContainer}>
+            {/*{guessRounds.map(guessRounds=><Text key={guessRounds}>{guessRounds}</Text>)}*/}
+
+            <FlatList data={guessRounds} renderItem={(itemData) =>
+                <GuessLogItem
+                    roundNumber={guessRounds.length - itemData.index}
+                    guess={itemData.item} />}
+                keyExtractor={(item) => item}
+            />
         </View>
     </View>
 }
@@ -95,5 +101,9 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         flex: 1
+    },
+    listContainer: {
+        // flex: 1,
+        padding: 16
     }
 });
